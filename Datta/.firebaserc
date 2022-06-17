@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "covcast-5bc1f",
+    "ecole-tabulate": "ecole-tabulate"
+  },
+  "targets": {}
+}

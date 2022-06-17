@@ -1,0 +1,587 @@
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="form-group">
+        <input
+          type="text"
+          class="form-control w-50"
+          id="search"
+          aria-describedby="searchHelp"
+          placeholder="Search"
+          [(ngModel)]="search"
+        />
+        <small id="searchHelp" class="form-text text-muted"
+          >Search for Student by Name, Phone Number, Date Of Birth, Email or
+          Address</small
+        >
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-6">
+          <div class="d-flex">
+            <div class="form-group">
+              <label for="startdate" class="pr-1">Date</label>
+              <input
+                class="form-control d-inline"
+                id="startdate"
+                type="date"
+                style="width: 160px"
+                [(ngModel)]="model.startdate"
+              />
+            </div>
+            <div class="form-group pl-2">
+              <label for="enddate" class="pr-1">To</label>
+              <input
+                class="form-control d-inline"
+                id="enddate"
+                type="date"
+                style="width: 160px"
+                [(ngModel)]="model.enddate"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-6 form-group">
+          <div class="button-container">
+            <button
+              class="btn btn-info mb-4"
+              type="button"
+              (click)="startSearch(model.startdate, model.enddate)"
+            >
+              Search
+            </button>
+            <button
+              class="btn btn-info mb-4"
+              type="button"
+              (click)="clearSearch()"
+            >
+              Clear
+            </button>
+            <div
+              class="btn-group mb-4 mr-2"
+              ngbDropdown
+              [placement]="'bottom-left'"
+            >
+              <button
+                class="btn btn-outline-dark"
+                ngbDropdownToggle
+                type="button"
+              >
+                Export
+              </button>
+              <div ngbDropdownMenu>
+                <a
+                  class="dropdown-item"
+                  href="javascript:"
+                  (click)="openUpload(uploadcontent)"
+                  >Upload Excel</a
+                >
+                <a
+                  class="dropdown-item"
+                  href="javascript:"
+                  (click)="downloadExcel()"
+                  >Export to Excel</a
+                >
+                <!-- <a
+                  class="dropdown-item"
+                  href="javascript:"
+                  (click)="downloadPDF()"
+                  >Export to Pdf</a
+                > -->
+                <a
+                  class="dropdown-item"
+                  href="assets/upload-templates/Student.xlsx"
+                  >Export Upload Template</a
+                >
+              </div>
+            </div>
+            <button
+              class="btn btn-danger mb-4"
+              type="button"
+              (click)="open(content)"
+            >
+              Add Student
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <app-card [hidHeader]="true">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <!-- <th scope="col">#</th> -->
+                <th scope="col">Name</th>
+                <th scope="col">Phone Number</th>
+                <th scope="col">Gender</th>
+                <th scope="col">Email</th>
+                <th scope="col">Date of Birth</th>
+                <th scope="col">Address</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody
+              *ngFor="
+                let student of students
+                  | studentFilter: search
+                  | paginate
+                    : {
+                        id: '_id',
+                        itemsPerPage: 10,
+                        currentPage: page,
+                        totalItems: totalRecords
+                      }
+              "
+            >
+              <tr class="read">
+                <!-- <td><img class="rounded-circle" style="width:40px;" src="assets/images/user/avatar-1.jpg" alt="activity-user"></td> -->
+                <td>
+                  <h6 class="mb-1">
+                    {{
+                      student.name.firstname + space + student.name.lastname ||
+                        "Not Set" | titlecase
+                    }}
+                  </h6>
+                </td>
+                <td>
+                  <h6 class="mb-1">
+                    {{ student.phonenumber }}
+                  </h6>
+                </td>
+                <td>
+                  <a
+                    href="javascript:"
+                    class="label bg-dark text-white f-12"
+                    *ngIf="student.gender === 'M'"
+                    >Male</a
+                  >
+                  <a
+                    href="javascript:"
+                    class="label bg-danger text-white f-12"
+                    *ngIf="student.gender === 'F'"
+                    >Female</a
+                  >
+                </td>
+                <td>
+                  <h6 class="mb-1">{{ student.email }}</h6>
+                </td>
+                <td>
+                  <h6 class="mb-1">
+                    {{ student.dateofbirth | date: "yyyy/M/dd" }}
+                  </h6>
+                </td>
+                <td>
+                  <h6 class="mb-1">
+                    {{ student.address }}
+                  </h6>
+                </td>
+                <td>
+                  <a
+                    href="javascript:"
+                    class="label theme-bg2 text-white f-12"
+                    (click)="onEdit(content, student)"
+                    ><i class="feather icon-edit-2"></i
+                  ></a>
+                  <a
+                    href="javascript:"
+                    class="label theme-bg text-white f-12"
+                    (click)="onDelete(student._id)"
+                    ><i class="feather icon-trash"></i
+                  ></a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </app-card>
+      <pagination-controls
+        id="_id"
+        (pageChange)="page = $event"
+        directionLinks="true"
+        autoHide="true"
+        responsive="true"
+        previousLabel="Previous"
+        nextLabel="Next"
+        screenReaderPaginationLabel="Pagination"
+        screenReaderPageLabel="page"
+        screenReaderCurrentLabel="You're on page"
+      >
+      </pagination-controls>
+    </div>
+  </div>
+
+  <ng-template #content let-modal>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Student Form</h4>
+        <button
+          type="button"
+          class="close"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form
+          [formGroup]="studentForm"
+          (ngSubmit)="studentFormSubmit(studentForm.value)"
+        >
+          <input
+            type="hidden"
+            name="_id"
+            class="form-control"
+            formControlName="_id"
+          />
+          <input
+            type="hidden"
+            name="userid"
+            class="form-control"
+            formControlName="userid"
+          />
+
+          <div class="form-group">
+            <label for="firstname">First Name</label>
+            <div class="input-group">
+              <input
+                id="firstname"
+                class="form-control"
+                placeholder="John"
+                name="firstname"
+                type="text"
+                formControlName="firstname"
+                [ngClass]="
+                  (studentForm.get('firstname').touched ||
+                    studentForm.get('firstname').dirty) &&
+                  studentForm.get('firstname').errors
+                    ? 'is-invalid'
+                    : ''
+                "
+                minlength="4"
+                required
+              />
+              <div
+                *ngIf="
+                  studentForm.get('firstname').invalid &&
+                  (studentForm.get('firstname').dirty ||
+                    studentForm.get('firstname').touched)
+                "
+                class="invalid-feedback"
+              >
+                <div *ngIf="studentForm.get('firstname').errors.required">
+                  This field is required
+                </div>
+                <div *ngIf="studentForm.get('firstname').errors.minlength">
+                  Minimum 4 characters
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="lastname">Last Name</label>
+            <div class="input-group">
+              <input
+                id="lastname"
+                class="form-control"
+                placeholder="Doe"
+                name="lastname"
+                type="text"
+                formControlName="lastname"
+                [ngClass]="
+                  (studentForm.get('lastname').touched ||
+                    studentForm.get('lastname').dirty) &&
+                  studentForm.get('lastname').errors
+                    ? 'is-invalid'
+                    : ''
+                "
+                required
+                minlength="4"
+              />
+              <div
+                *ngIf="
+                  studentForm.get('lastname').invalid &&
+                  (studentForm.get('lastname').dirty ||
+                    studentForm.get('lastname').touched)
+                "
+                class="invalid-feedback"
+              >
+                <div *ngIf="studentForm.get('lastname').errors.required">
+                  This field is required
+                </div>
+                <div *ngIf="studentForm.get('lastname').errors.minlength">
+                  Minimum 4 characters
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="phonenumber">Phone Number</label>
+            <div class="input-group">
+              <input
+                id="phonenumber"
+                class="form-control"
+                placeholder="(233) xxx xxx xxx"
+                name="phonenumber"
+                type="tel"
+                formControlName="phonenumber"
+                [ngClass]="
+                  (studentForm.get('phonenumber').touched ||
+                    studentForm.get('phonenumber').dirty) &&
+                  studentForm.get('phonenumber').errors
+                    ? 'is-invalid'
+                    : ''
+                "
+                minlength="12"
+                required
+              />
+              <div
+                *ngIf="
+                  studentForm.get('phonenumber').invalid &&
+                  (studentForm.get('phonenumber').dirty ||
+                    studentForm.get('phonenumber').touched)
+                "
+                class="invalid-feedback"
+              >
+                <div *ngIf="studentForm.get('phonenumber').errors.required">
+                  This field is required
+                </div>
+                <div *ngIf="studentForm.get('phonenumber').errors.minlength">
+                  Minimum 12 characters
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Gender:</label>
+            <div class="col">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="gender"
+                  id="exampleRadios1"
+                  value="M"
+                  formControlName="gender"
+                  checked
+                />
+                <label class="form-check-label" for="exampleRadios1">
+                  Male
+                </label>
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="gender"
+                  id="exampleRadios2"
+                  value="F"
+                  formControlName="gender"
+                />
+                <label class="form-check-label" for="exampleRadios2">
+                  Female
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <div class="input-group">
+              <input
+                id="email"
+                class="form-control"
+                placeholder="johndoe@gmail.com"
+                name="email"
+                type="text"
+                formControlName="email"
+                [ngClass]="
+                  (studentForm.get('email').touched ||
+                    studentForm.get('email').dirty) &&
+                  studentForm.get('email').errors
+                    ? 'is-invalid'
+                    : ''
+                "
+                required
+              />
+              <div
+                *ngIf="
+                  studentForm.get('email').invalid &&
+                  (studentForm.get('email').dirty ||
+                    studentForm.get('email').touched)
+                "
+                class="invalid-feedback"
+              >
+                <div *ngIf="studentForm.get('email').errors.required">
+                  This field is required
+                </div>
+                <div
+                  *ngIf="
+                    studentForm.get('email').errors.minlength &&
+                    studentForm.get('email').hasError('required')
+                  "
+                >
+                  Invalid Email
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="dateofbirth">Date Of Birth</label>
+            <div class="input-group">
+              <input
+                id="dateofbirth"
+                class="form-control"
+                name="dateofbirth"
+                type="date"
+                formControlName="dateofbirth"
+                [ngClass]="
+                  (studentForm.get('dateofbirth').touched ||
+                    studentForm.get('dateofbirth').dirty) &&
+                  studentForm.get('dateofbirth').errors
+                    ? 'is-invalid'
+                    : ''
+                "
+                required
+              />
+              <div
+                *ngIf="
+                  studentForm.get('dateofbirth').invalid &&
+                  (studentForm.get('dateofbirth').dirty ||
+                    studentForm.get('dateofbirth').touched)
+                "
+                class="invalid-feedback"
+              >
+                <div *ngIf="studentForm.get('dateofbirth').errors.required">
+                  This field is required
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="address">Address</label>
+            <div class="input-group">
+              <textarea
+                id="address"
+                class="form-control"
+                placeholder="Type your address"
+                name="address"
+                type="text"
+                formControlName="address"
+                [ngClass]="
+                  (studentForm.get('address').touched ||
+                    studentForm.get('address').dirty) &&
+                  studentForm.get('address').errors
+                    ? 'is-invalid'
+                    : ''
+                "
+                required
+                rows="3"
+              ></textarea>
+              <div
+                *ngIf="
+                  studentForm.get('address').invalid &&
+                  (studentForm.get('address').dirty ||
+                    studentForm.get('address').touched)
+                "
+                class="invalid-feedback"
+              >
+                <div *ngIf="studentForm.get('address').errors.required">
+                  This field is required
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-info">Save</button>
+            <button
+              type="button"
+              class="btn btn-outline-dark"
+              (click)="modal.close('Cancel click')"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #uploadcontent let-modal>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Students Upload Form</h4>
+        <button
+          type="button"
+          class="close"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form
+          [formGroup]="uploadForm"
+          (ngSubmit)="uploadExcel()"
+          enctype="multipart/form-data"
+        >
+          <div class="form-group">
+            <label for="file">File</label>
+            <div class="input-group">
+              <input
+                id="source"
+                (change)="onFileChange($event)"
+                class="form-control"
+                placeholder="Upload Excel File"
+                name="file"
+                type="file"
+                formControlName="source"
+                [ngClass]="
+                  (uploadForm.get('source').touched ||
+                    uploadForm.get('source').dirty) &&
+                  uploadForm.get('source').errors
+                    ? 'is-invalid'
+                    : ''
+                "
+                required
+              />
+              <div
+                *ngIf="
+                  uploadForm.get('source').invalid &&
+                  (uploadForm.get('source').dirty ||
+                    uploadForm.get('source').touched)
+                "
+                class="invalid-feedback"
+              >
+                <div *ngIf="uploadForm.get('source').errors.required">
+                  This field is required
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-info">Upload</button>
+            <button
+              type="button"
+              class="btn btn-outline-dark"
+              (click)="modal.close('Cancel click')"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </ng-template>
+</div>
