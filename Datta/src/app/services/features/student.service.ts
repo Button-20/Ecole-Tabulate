@@ -41,7 +41,7 @@ export class StudentService {
             if (ex.status === 422) {
               this.spinner.hide();
               this.toastr.warning(
-                (this.serverErrorMessages = await ex.error.message),
+                (this.serverErrorMessages = await ex.error),
                 "Student Post Failed"
               );
               reject({ error: ex.error || ex || "Student Post Failed" });
@@ -79,7 +79,7 @@ export class StudentService {
             if (ex.status === 400 || 500) {
               this.spinner.hide();
               this.toastr.warning(
-                (this.serverErrorMessages = await ex.error.message),
+                (this.serverErrorMessages = await ex.error),
                 "Student Excel Upload Failed"
               );
               reject({

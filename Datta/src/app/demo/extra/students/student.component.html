@@ -255,30 +255,25 @@
                 type="text"
                 formControlName="firstname"
                 [ngClass]="
-                  (studentForm.get('firstname').touched ||
-                    studentForm.get('firstname').dirty) &&
-                  studentForm.get('firstname').errors
+                  (firstname.touched || firstname.dirty) && firstname.errors
                     ? 'is-invalid'
                     : ''
                 "
-                minlength="4"
                 required
               />
-              <div
-                *ngIf="
-                  studentForm.get('firstname').invalid &&
-                  (studentForm.get('firstname').dirty ||
-                    studentForm.get('firstname').touched)
-                "
-                class="invalid-feedback"
+              <ng-container
+                *ngFor="let validation of validation_messages.firstname"
               >
-                <div *ngIf="studentForm.get('firstname').errors.required">
-                  This field is required
+                <div
+                  class="invalid-feedback"
+                  *ngIf="
+                    firstname.hasError(validation.type) &&
+                    (firstname.dirty || firstname.touched)
+                  "
+                >
+                  {{ validation.message }}
                 </div>
-                <div *ngIf="studentForm.get('firstname').errors.minlength">
-                  Minimum 4 characters
-                </div>
-              </div>
+              </ng-container>
             </div>
           </div>
 
@@ -293,30 +288,25 @@
                 type="text"
                 formControlName="lastname"
                 [ngClass]="
-                  (studentForm.get('lastname').touched ||
-                    studentForm.get('lastname').dirty) &&
-                  studentForm.get('lastname').errors
+                  (lastname.touched || lastname.dirty) && lastname.errors
                     ? 'is-invalid'
                     : ''
                 "
                 required
-                minlength="4"
               />
-              <div
-                *ngIf="
-                  studentForm.get('lastname').invalid &&
-                  (studentForm.get('lastname').dirty ||
-                    studentForm.get('lastname').touched)
-                "
-                class="invalid-feedback"
+              <ng-container
+                *ngFor="let validation of validation_messages.lastname"
               >
-                <div *ngIf="studentForm.get('lastname').errors.required">
-                  This field is required
+                <div
+                  class="invalid-feedback"
+                  *ngIf="
+                    lastname.hasError(validation.type) &&
+                    (lastname.dirty || lastname.touched)
+                  "
+                >
+                  {{ validation.message }}
                 </div>
-                <div *ngIf="studentForm.get('lastname').errors.minlength">
-                  Minimum 4 characters
-                </div>
-              </div>
+              </ng-container>
             </div>
           </div>
 
@@ -331,30 +321,26 @@
                 type="tel"
                 formControlName="phonenumber"
                 [ngClass]="
-                  (studentForm.get('phonenumber').touched ||
-                    studentForm.get('phonenumber').dirty) &&
-                  studentForm.get('phonenumber').errors
+                  (phonenumber.touched || phonenumber.dirty) &&
+                  phonenumber.errors
                     ? 'is-invalid'
                     : ''
                 "
-                minlength="12"
                 required
               />
-              <div
-                *ngIf="
-                  studentForm.get('phonenumber').invalid &&
-                  (studentForm.get('phonenumber').dirty ||
-                    studentForm.get('phonenumber').touched)
-                "
-                class="invalid-feedback"
+              <ng-container
+                *ngFor="let validation of validation_messages.phonenumber"
               >
-                <div *ngIf="studentForm.get('phonenumber').errors.required">
-                  This field is required
+                <div
+                  class="invalid-feedback"
+                  *ngIf="
+                    phonenumber.hasError(validation.type) &&
+                    (phonenumber.dirty || phonenumber.touched)
+                  "
+                >
+                  {{ validation.message }}
                 </div>
-                <div *ngIf="studentForm.get('phonenumber').errors.minlength">
-                  Minimum 12 characters
-                </div>
-              </div>
+              </ng-container>
             </div>
           </div>
 
@@ -402,34 +388,25 @@
                 type="text"
                 formControlName="email"
                 [ngClass]="
-                  (studentForm.get('email').touched ||
-                    studentForm.get('email').dirty) &&
-                  studentForm.get('email').errors
+                  (email.touched || email.dirty) && email.errors
                     ? 'is-invalid'
                     : ''
                 "
                 required
               />
-              <div
-                *ngIf="
-                  studentForm.get('email').invalid &&
-                  (studentForm.get('email').dirty ||
-                    studentForm.get('email').touched)
-                "
-                class="invalid-feedback"
+              <ng-container
+                *ngFor="let validation of validation_messages.email"
               >
-                <div *ngIf="studentForm.get('email').errors.required">
-                  This field is required
-                </div>
                 <div
+                  class="invalid-feedback"
                   *ngIf="
-                    studentForm.get('email').errors.minlength &&
-                    studentForm.get('email').hasError('required')
+                    email.hasError(validation.type) &&
+                    (email.dirty || email.touched)
                   "
                 >
-                  Invalid Email
+                  {{ validation.message }}
                 </div>
-              </div>
+              </ng-container>
             </div>
           </div>
 
@@ -443,26 +420,26 @@
                 type="date"
                 formControlName="dateofbirth"
                 [ngClass]="
-                  (studentForm.get('dateofbirth').touched ||
-                    studentForm.get('dateofbirth').dirty) &&
-                  studentForm.get('dateofbirth').errors
+                  (dateofbirth.touched || dateofbirth.dirty) &&
+                  dateofbirth.errors
                     ? 'is-invalid'
                     : ''
                 "
                 required
               />
-              <div
-                *ngIf="
-                  studentForm.get('dateofbirth').invalid &&
-                  (studentForm.get('dateofbirth').dirty ||
-                    studentForm.get('dateofbirth').touched)
-                "
-                class="invalid-feedback"
+              <ng-container
+                *ngFor="let validation of validation_messages.dateofbirth"
               >
-                <div *ngIf="studentForm.get('dateofbirth').errors.required">
-                  This field is required
+                <div
+                  class="invalid-feedback"
+                  *ngIf="
+                    dateofbirth.hasError(validation.type) &&
+                    (dateofbirth.dirty || dateofbirth.touched)
+                  "
+                >
+                  {{ validation.message }}
                 </div>
-              </div>
+              </ng-container>
             </div>
           </div>
 
@@ -502,7 +479,13 @@
           </div>
 
           <div class="modal-footer">
-            <button type="submit" class="btn btn-info">Save</button>
+            <button
+              type="submit"
+              class="btn btn-info"
+              [disabled]="studentForm.invalid"
+            >
+              Save
+            </button>
             <button
               type="button"
               class="btn btn-outline-dark"

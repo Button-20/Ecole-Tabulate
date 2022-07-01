@@ -16,13 +16,34 @@ import { ExcelService } from "src/app/services/features/excel.service";
 export class StudentComponent implements OnInit {
   modelForm = { present: true };
   studentForm = new FormGroup({
-    _id: new FormControl("", Validators.required),
-    userid: new FormControl("", Validators.required),
-    firstname: new FormControl("", Validators.required),
-    lastname: new FormControl("", Validators.required),
-    phonenumber: new FormControl("", Validators.required),
+    _id: new FormControl(""),
+    userid: new FormControl(""),
+    firstname: new FormControl(
+      "",
+      Validators.compose([
+        Validators.required,
+        Validators.pattern("^[a-zA-Z ]+$"),
+      ])
+    ),
+    lastname: new FormControl(
+      "",
+      Validators.compose([
+        Validators.required,
+        Validators.pattern("^[a-zA-Z ]+$"),
+      ])
+    ),
+    phonenumber: new FormControl(
+      "",
+      Validators.compose([
+        Validators.required,
+        Validators.pattern("^[0-9]{12}$"),
+      ])
+    ),
     gender: new FormControl("", Validators.required),
-    email: new FormControl("", Validators.required),
+    email: new FormControl(
+      "",
+      Validators.compose([Validators.required, Validators.email])
+    ),
     dateofbirth: new FormControl("", Validators.required),
     address: new FormControl("", Validators.required),
   });
@@ -52,6 +73,26 @@ export class StudentComponent implements OnInit {
   totalRecords: number;
   Admin: any;
   oldData: any;
+  validation_messages = {
+    firstname: [
+      { type: "required", message: "First name is required" },
+      { type: "pattern", message: "First name must be alphabet" },
+    ],
+    lastname: [
+      { type: "required", message: "Last name is required" },
+      { type: "pattern", message: "Last name must be alphabet" },
+    ],
+    phonenumber: [
+      { type: "required", message: "Phone number is required" },
+      { type: "pattern", message: "Phone number must be 12 digits" },
+    ],
+    email: [
+      { type: "required", message: "Email is required" },
+      { type: "email", message: "Email is invalid" },
+    ],
+    dateofbirth: [{ type: "required", message: "Date of birth is required" }],
+    address: [{ type: "required", message: "Address is required" }],
+  };
 
   constructor(
     private userService: UserService,
@@ -185,6 +226,7 @@ export class StudentComponent implements OnInit {
       let data = {
         Name: student.name.firstname + " " + student.name.lastname,
         PhoneNumber: student.phonenumber,
+        Gender: student.gender,
         Email: student.email,
         DateOfBirth: this.formattedDate(student.dateofbirth),
         Address: student.address,
@@ -200,97 +242,6 @@ export class StudentComponent implements OnInit {
       "Student__Exports",
       "Students"
     );
-  }
-
-  downloadPDF() {
-    // this.attendanceService.attendance.forEach((attendance) => {
-    //   let data = {
-    //     ClassName: attendance.classname,
-    //     MemberName: attendance.membername,
-    //     Date: this.formattedDate(attendance.date),
-    //     Temperature: attendance.temperature,
-    //     Event: attendance.event,
-    //     Present: attendance.present ? "Yes" : "No",
-    //   };
-    //   this.data.push(data);
-    // });
-    // var props = {
-    //   outputType: OutputType.Save,
-    //   returnJsPDFDocObject: true,
-    //   fileName: Date.now() + "__Finances__Exports",
-    //   orientationLandscape: false,
-    //   logo: {
-    //     src: "https://raw.githubusercontent.com/edisonneza/jspdf-invoice-template/demo/images/logo.png",
-    //     width: 53.33, //aspect ratio = width/height
-    //     height: 26.66,
-    //     margin: {
-    //       top: 0, //negative or positive num, from the current position
-    //       left: 0, //negative or positive num, from the current position
-    //     },
-    //   },
-    //   business: {
-    //     name: "Business Name",
-    //     address: "Albania, Tirane ish-Dogana, Durres 2001",
-    //     phone: "(+233) 55 065 3404",
-    //     email: "jasonaddy51@gmail.com",
-    //     email_1: "info@example.al",
-    //     website: "www.example.al",
-    //   },
-    //   contact: {
-    //     label: "Invoice issued for:",
-    //     name: "Client Name",
-    //     address: "Albania, Tirane, Astir",
-    //     phone: "(+355) 069 22 22 222",
-    //     email: "client@website.al",
-    //     otherInfo: "www.website.al",
-    //   },
-    //   invoice: {
-    //     label: "Invoice #: ",
-    //     num: 19,
-    //     invDate: "Payment Date: 01/01/2021 18:12",
-    //     invGenDate: "Invoice Date: 02/02/2021 10:17",
-    //     headerBorder: false,
-    //     tableBodyBorder: false,
-    //     header: this.columns,
-    //     table: Array.from(this.data, (item, index) => [
-    //       // index + 1,
-    //       item.ClassName,
-    //       item.MemberName,
-    //       this.formattedDate(item.Date),
-    //       item.Temperature,
-    //       item.Event,
-    //       item.Present ? "Yes" : "No",
-    //     ]),
-    //     invTotalLabel: "Total:",
-    //     invTotal: "145,250.50",
-    //     invCurrency: "ALL",
-    //     row1: {
-    //       col1: "VAT:",
-    //       col2: "20",
-    //       col3: "%",
-    //       style: {
-    //         fontSize: 10, //optional, default 12
-    //       },
-    //     },
-    //     row2: {
-    //       col1: "SubTotal:",
-    //       col2: "116,199.90",
-    //       col3: "ALL",
-    //       style: {
-    //         fontSize: 10, //optional, default 12
-    //       },
-    //     },
-    //     invDescLabel: "Invoice Note",
-    //     invDesc:
-    //       "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary.",
-    //   },
-    //   footer: {
-    //     text: "The invoice is created on a computer and is valid without the signature and stamp.",
-    //   },
-    //   pageEnable: true,
-    //   pageLabel: "Page ",
-    // };
-    // const pdfObject = jsPDFInvoiceTemplate(props);
   }
 
   get firstname() {
